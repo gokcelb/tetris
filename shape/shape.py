@@ -1,7 +1,14 @@
+<<<<<<< Updated upstream
 import abc
 import random
 
 class Shape(metaclass=abc.ABCMeta):
+=======
+from abc import ABC, abstractmethod
+import random
+
+class Shape(ABC):
+>>>>>>> Stashed changes
     COLORS = [
         (255, 0, 0),
         (0, 0, 255),
@@ -15,6 +22,7 @@ class Shape(metaclass=abc.ABCMeta):
         self.sqsz = square_size
         self.color = self.random_color()
 
+<<<<<<< Updated upstream
     @abc.abstractmethod
     def coordinates(self):
         raise NotImplementedError
@@ -29,6 +37,22 @@ class Shape(metaclass=abc.ABCMeta):
 class Basic(Shape):
     def __init__(self):
         super().__init__()
+=======
+    def random_color(self):
+        return Shape.COLORS[random.randint(0, len(Shape.COLORS) - 1)]
+
+    @abstractmethod
+    def coordinates(self):
+        raise NotImplementedError
+
+    # @abstractmethod
+    # def rotatations(self):
+    #     raise NotImplementedError
+
+class Basic(Shape):
+    def __init__(self, square_size):
+        super().__init__(square_size)
+>>>>>>> Stashed changes
 
     def coordinates(self):
         return [[0, 0], [self.sqsz, 0], [self.sqsz*2, 0], [self.sqsz*3, 0]]
@@ -37,8 +61,13 @@ class Basic(Shape):
         pass
 
 class SquareInMiddle(Shape):
+<<<<<<< Updated upstream
     def __init__(self):
         super().__init__()
+=======
+    def __init__(self, square_size):
+        super().__init__(square_size)
+>>>>>>> Stashed changes
 
     def coordinates(self):
         return [[0, 0], [self.sqsz, 0], [self.sqsz*2, 0], [self.sqsz*3, 0]]
@@ -47,8 +76,13 @@ class SquareInMiddle(Shape):
         pass
 
 class SquareOnLeft(Shape):
+<<<<<<< Updated upstream
     def __init__(self):
         super().__init__()
+=======
+    def __init__(self, square_size):
+        super().__init__(square_size)
+>>>>>>> Stashed changes
 
     def coordinates(self):
         return [[0, 0], [self.sqsz, 0], [self.sqsz*2, 0], [0, self.sqsz]]
@@ -57,8 +91,13 @@ class SquareOnLeft(Shape):
         pass
 
 class SquareOnRight(Shape):
+<<<<<<< Updated upstream
     def __init__(self):
         super().__init__()
+=======
+    def __init__(self, square_size):
+        super().__init__(square_size)
+>>>>>>> Stashed changes
 
     def coordinates(self):
         return [[0, 0], [self.sqsz, 0], [self.sqsz*2, 0], [self.sqsz*2, self.sqsz]]
@@ -67,8 +106,13 @@ class SquareOnRight(Shape):
         pass
 
 class Zigzag(Shape):
+<<<<<<< Updated upstream
     def __init__(self):
         super().__init__()
+=======
+    def __init__(self, square_size):
+        super().__init__(square_size)
+>>>>>>> Stashed changes
 
     def coordinates(self):
         return [[0, 0], [self.sqsz, 0], [self.sqsz, self.sqsz], [self.sqsz*2, self.sqsz]]
