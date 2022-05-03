@@ -1,13 +1,14 @@
 import pygame
+import random
 from shape.shape_generator import ShapeGenerator
 
 BLACK = (0, 0, 0)
 
-SQUARE_SIZE = 20
-SQUARE_DIMENSIONS = [SQUARE_SIZE , SQUARE_SIZE]
-
 SCREEN_SIZE = (400, 500)
 
+SQUARE_SIZE = 20
+SQUARE_DIMENSIONS = [SQUARE_SIZE , SQUARE_SIZE]
+STARTING_COORDINATES = [random.randrange(0, SCREEN_SIZE[0] - SQUARE_SIZE * 4, 20), 0]
 
 def main():
     pygame.init()
@@ -19,7 +20,7 @@ def main():
 
     running = True
 
-    shape = ShapeGenerator(SQUARE_SIZE).random_shape()
+    shape = ShapeGenerator(STARTING_COORDINATES, SQUARE_SIZE).random_shape()
     coordinates_list = shape.coordinates()
 
     while running:
