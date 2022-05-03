@@ -8,7 +8,10 @@ SCREEN_SIZE = (400, 500)
 
 SQUARE_SIZE = 20
 SQUARE_DIMENSIONS = [SQUARE_SIZE , SQUARE_SIZE]
-STARTING_COORDINATES = [random.randrange(0, SCREEN_SIZE[0] - SQUARE_SIZE * 4, 20), 0]
+STARTING_COORDINATES = [
+    random.randrange(SQUARE_SIZE * 3, SCREEN_SIZE[0] - SQUARE_SIZE * 4, 20),
+    SQUARE_SIZE * 3
+]
 
 def main():
     pygame.init()
