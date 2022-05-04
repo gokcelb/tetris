@@ -36,7 +36,7 @@ def main():
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_r:
-                    coordinates_list = shape.rotate(coordinates_list)
+                    coordinates_list = shape.rotate()
 
         for coordinates in coordinates_list:
             draw(screen, shape.color, coordinates, SQUARE_DIMENSIONS)

@@ -27,15 +27,64 @@ class Shape(ABC):
             return self.curr_coord_list
 
         for _ in range(rotation_count):
-            self.rotate(self.curr_coord_list)
+            self.rotate()
         return self.curr_coord_list
+
+    def calc_rotation(self, rotation_zone):
+        ref_coord = self.curr_coord_list[0]
+        ref_x = ref_coord[0]
+        ref_y = ref_coord[1]
+        rotated_coord_list = [ref_coord]
+
+        for i in range(1, len(self.curr_coord_list)):
+            x = self.curr_coord_list[i][0]
+            y = self.curr_coord_list[i][1]
+
+            if rotation_zone == 90:
+                new_coord = [ref_x - (y - ref_y), ref_y + (x - ref_x)]
+            elif rotation_zone == 180:
+                new_coord = [ref_x - (y - ref_y), ref_y - (ref_x - x)]
+            elif rotation_zone == 270:
+                new_coord = [ref_x + (ref_y - y), ref_y - (ref_x - x)]
+            elif rotation_zone == 360:
+                new_coord = [ref_x + (ref_y - y), ref_y + (x - ref_x)]
+            rotated_coord_list.append(new_coord)
+
+        self.curr_coord_list = rotated_coord_list
+
+    def calc_zone(self, is_basic):
+        ref_x = self.curr_coord_list[0][0]
+        ref_y = self.curr_coord_list[0][1]
+        x = self.curr_coord_list[3][0]
+        y = self.curr_coord_list[3][1]
+
+        if is_basic:
+            zone_90 = x > ref_x and y == ref_y
+            zone_180 = x == ref_x and y > ref_y
+            zone_270 = x < ref_x and y == ref_y
+            zone_360 = x == ref_x and y < ref_y
+
+        zone_90 = x > ref_x and y >= ref_y
+        zone_180 = x <= ref_x and y > ref_y
+        zone_270 = x < ref_x and y <= ref_y
+        zone_360 = x >= ref_x and y < ref_y
+
+        if zone_90:
+            rotation_zone = 90
+        elif zone_180:
+            rotation_zone = 180
+        elif zone_270:
+            rotation_zone = 270
+        elif zone_360:
+            rotation_zone = 360
+        return rotation_zone
 
     @abstractmethod
     def init_coordinates(self):
         raise NotImplementedError
 
     @abstractmethod
-    def rotate(self, old_coord_list):
+    def rotate(self):
         raise NotImplementedError
 
     @staticmethod
@@ -54,32 +103,9 @@ class Basic(Shape):
             self.add_coordinates(self.sc, [self.sqsz * 3, 0])
             ]
 
-    def rotate(self, old_coord_list):
-        ref_coord = old_coord_list[0]
-        ref_x = ref_coord[0]
-        ref_y = ref_coord[1]
-        rotated_coord_list = [ref_coord]
-
-        for i in range(1, len(old_coord_list)):
-            x = old_coord_list[i][0]
-            y = old_coord_list[i][1]
-
-            zone_90 = x > ref_x and y == ref_y
-            zone_180 = x == ref_x and y > ref_y
-            zone_270 = x < ref_x and y == ref_y
-            zone_360 = x == ref_x and y < ref_y
-
-            if zone_90:
-                new_coord = [ref_x, ref_y + (x - ref_x)]
-            elif zone_180:
-                new_coord = [ref_x - (y - ref_y), ref_y]
-            elif zone_270:
-                new_coord = [ref_x, ref_y - (ref_x - x)]
-            elif zone_360:
-                new_coord = [ref_x + (ref_y - y), ref_y]
-            rotated_coord_list.append(new_coord)
-
-        self.curr_coord_list = rotated_coord_list
+    def rotate(self):
+        zone = self.calc_zone(True)
+        self.calc_rotation(zone)
         return self.curr_coord_list
 
 class SquareInMiddle(Shape):
@@ -94,44 +120,9 @@ class SquareInMiddle(Shape):
             self.add_coordinates(self.sc, [self.sqsz, self.sqsz])
         ]
 
-    def rotate(self, old_coord_list):
-        ref_coord = old_coord_list[0]
-        ref_x = ref_coord[0]
-        ref_y = ref_coord[1]
-        rotated_coord_list = [ref_coord]
-
-        for i in range(1, len(old_coord_list)):
-            x = old_coord_list[i][0]
-            y = old_coord_list[i][1]
-
-            zone_90 = x > ref_x and y >= ref_y
-            zone_180 = x <= ref_x and y > ref_y
-            zone_270 = x < ref_x and y <= ref_y
-            zone_360 = x >= ref_x and y < ref_y
-
-            if zone_90:
-                if y == ref_y:
-                    new_coord = [ref_x, ref_y + (x - ref_x)]
-                elif y > ref_y:
-                    new_coord = [ref_x - (y - ref_y), ref_y + (x - ref_x)]
-            elif zone_180:
-                if x == ref_x:
-                    new_coord = [ref_x - (y - ref_y), ref_y]
-                elif x < ref_x:
-                    new_coord = [ref_x - (y - ref_y), ref_y - (ref_x - x)]
-            elif zone_270:
-                if y == ref_y:
-                    new_coord = [ref_x, ref_y - (ref_x - x)]
-                elif y < ref_y:
-                    new_coord = [ref_x + (ref_y - y), ref_y - (ref_x - x)]
-            elif zone_360:
-                if x == ref_x:
-                    new_coord = [ref_x + (ref_y - y), ref_y]
-                elif x > ref_x:
-                    new_coord = [ref_x + (ref_y - y), ref_y + (x - ref_x)]
-            rotated_coord_list.append(new_coord)
-
-        self.curr_coord_list = rotated_coord_list
+    def rotate(self):
+        zone = self.calc_zone(False)
+        self.calc_rotation(zone)
         return self.curr_coord_list
 
 class SquareOnLeft(Shape):
@@ -146,46 +137,9 @@ class SquareOnLeft(Shape):
             self.add_coordinates(self.sc, [0, self.sqsz])
         ]
 
-    def rotate(self, old_coord_list):
-        ref_coord = old_coord_list[0]
-        ref_x = ref_coord[0]
-        ref_y = ref_coord[1]
-        odd_x = old_coord_list[3][0]
-        odd_y = old_coord_list[3][1]
-        rotated_coord_list = [ref_coord]
-
-        zone_90 = odd_x == ref_x and odd_y > ref_y
-        zone_180 = odd_x < ref_x and odd_y == ref_y
-        zone_270 = odd_x == ref_x and odd_y < ref_y
-        zone_360 = odd_x > ref_x and odd_y == ref_y
-
-        for i in range(1, len(old_coord_list)):
-            x = old_coord_list[i][0]
-            y = old_coord_list[i][1]
-
-            if zone_90:
-                if y == ref_y:
-                    new_coord = [ref_x, ref_y + (x - ref_x)]
-                elif y > ref_y:
-                    new_coord = [ref_x - (y - ref_y), ref_y + (x - ref_x)]
-            elif zone_180:
-                if x == ref_x:
-                    new_coord = [ref_x - (y - ref_y), ref_y]
-                elif x < ref_x:
-                    new_coord = [ref_x - (y - ref_y), ref_y - (ref_x - x)]
-            elif zone_270:
-                if y == ref_y:
-                    new_coord = [ref_x, ref_y - (ref_x - x)]
-                elif y < ref_y:
-                    new_coord = [ref_x + (ref_y - y), ref_y - (ref_x - x)]
-            elif zone_360:
-                if x == ref_x:
-                    new_coord = [ref_x + (ref_y - y), ref_y]
-                elif x > ref_x:
-                    new_coord = [ref_x + (ref_y - y), ref_y + (x - ref_x)]
-            rotated_coord_list.append(new_coord)
-
-        self.curr_coord_list = rotated_coord_list
+    def rotate(self):
+        zone = self.calc_zone(False)
+        self.calc_rotation(zone)
         return self.curr_coord_list
 
 class SquareOnRight(Shape):
@@ -200,44 +154,9 @@ class SquareOnRight(Shape):
             self.add_coordinates(self.sc, [self.sqsz * 2, self.sqsz])
         ]
 
-    def rotate(self, old_coord_list):
-        ref_coord = old_coord_list[0]
-        ref_x = ref_coord[0]
-        ref_y = ref_coord[1]
-        rotated_coord_list = [ref_coord]
-
-        for i in range(1, len(old_coord_list)):
-            x = old_coord_list[i][0]
-            y = old_coord_list[i][1]
-
-            zone_90 = x > ref_x and y >= ref_y
-            zone_180 = x <= ref_x and y > ref_y
-            zone_270 = x < ref_x and y <= ref_y
-            zone_360 = x >= ref_x and y < ref_y
-
-            if zone_90:
-                if y == ref_y:
-                    new_coord = [ref_x, ref_y + (x - ref_x)]
-                elif y > ref_y:
-                    new_coord = [ref_x - (y - ref_y), ref_y + (x - ref_x)]
-            elif zone_180:
-                if x == ref_x:
-                    new_coord = [ref_x - (y - ref_y), ref_y]
-                elif x < ref_x:
-                    new_coord = [ref_x - (y - ref_y), ref_y - (ref_x - x)]
-            elif zone_270:
-                if y == ref_y:
-                    new_coord = [ref_x, ref_y - (ref_x - x)]
-                elif y < ref_y:
-                    new_coord = [ref_x + (ref_y - y), ref_y - (ref_x - x)]
-            elif zone_360:
-                if x == ref_x:
-                    new_coord = [ref_x + (ref_y - y), ref_y]
-                elif x > ref_x:
-                    new_coord = [ref_x + (ref_y - y), ref_y + (x - ref_x)]
-            rotated_coord_list.append(new_coord)
-
-        self.curr_coord_list = rotated_coord_list
+    def rotate(self):
+        zone = self.calc_zone(False)
+        self.calc_rotation(zone)
         return self.curr_coord_list
 
 class Zigzag(Shape):
@@ -252,42 +171,7 @@ class Zigzag(Shape):
             self.add_coordinates(self.sc, [self.sqsz * 2, self.sqsz])
         ]
 
-    def rotate(self, old_coord_list):
-        ref_coord = old_coord_list[0]
-        ref_x = ref_coord[0]
-        ref_y = ref_coord[1]
-        rotated_coord_list = [ref_coord]
-
-        for i in range(1, len(old_coord_list)):
-            x = old_coord_list[i][0]
-            y = old_coord_list[i][1]
-
-            zone_90 = x > ref_x and y >= ref_y
-            zone_180 = x <= ref_x and y > ref_y
-            zone_270 = x < ref_x and y <= ref_y
-            zone_360 = x >= ref_x and y < ref_y
-
-            if zone_90:
-                if y == ref_y:
-                    new_coord = [ref_x, ref_y + (x - ref_x)]
-                elif y > ref_y:
-                    new_coord = [ref_x - (y - ref_y), ref_y + (x - ref_x)]
-            elif zone_180:
-                if x == ref_x:
-                    new_coord = [ref_x - (y - ref_y), ref_y]
-                elif x < ref_x:
-                    new_coord = [ref_x - (y - ref_y), ref_y - (ref_x - x)]
-            elif zone_270:
-                if y == ref_y:
-                    new_coord = [ref_x, ref_y - (ref_x - x)]
-                elif y < ref_y:
-                    new_coord = [ref_x + (ref_y - y), ref_y - (ref_x - x)]
-            elif zone_360:
-                if x == ref_x:
-                    new_coord = [ref_x + (ref_y - y), ref_y]
-                elif x > ref_x:
-                    new_coord = [ref_x + (ref_y - y), ref_y + (x - ref_x)]
-            rotated_coord_list.append(new_coord)
-
-        self.curr_coord_list = rotated_coord_list
+    def rotate(self):
+        zone = self.calc_zone(False)
+        self.calc_rotation(zone)
         return self.curr_coord_list
