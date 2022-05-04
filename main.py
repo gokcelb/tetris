@@ -26,6 +26,7 @@ def main():
     shape = ShapeGenerator(STARTING_COORDINATES, SQUARE_SIZE).random_shape()
     coordinates_list = shape.coordinates()
 
+
     while running:
         screen.fill(BLACK)
 
@@ -33,11 +34,18 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
 
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_r:
+                    coordinates_list = shape.rotate(coordinates_list)
+
         for coordinates in coordinates_list:
-            pygame.draw.rect(screen, shape.color, (coordinates, SQUARE_DIMENSIONS))
-            pygame.draw.rect(screen, BLACK, (coordinates, SQUARE_DIMENSIONS), 1)
+            draw(screen, shape.color, coordinates, SQUARE_DIMENSIONS)
 
         pygame.display.flip()
+
+def draw(screen, color, coord, dimensions):
+    pygame.draw.rect(screen, color, (coord, dimensions))
+    pygame.draw.rect(screen, BLACK, (coord, dimensions), 1)
 
 if __name__ == "__main__":
     main()
