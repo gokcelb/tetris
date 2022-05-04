@@ -15,60 +15,20 @@ class Shape(ABC):
         self.sc = starting_coordinates
         self.sqsz = square_size
         self.color = self.__random_color()
+        self.curr_coord_list = self.init_coordinates()
 
     def __random_color(self):
         return Shape.COLORS[random.randint(0, len(Shape.COLORS) - 1)]
 
     def coordinates(self):
-        rotations = [0, 90, 180, 270]
-        rotation_degree = rotations[random.randint(0, len(rotations) - 1)]
-        if rotation_degree == 0:
-            return self.init_coordinates()
+        times = [0, 1, 2, 3]
+        rotation_count = times[random.randint(0, len(times) - 1)]
+        if rotation_count == 0:
+            return self.curr_coord_list
 
-        return self.__rotate(rotation_degree)
-
-    def __rotate(self, rotation_degree):
-        init_coord_list = self.init_coordinates()
-        ref_coord = init_coord_list[0]
-        rotated_coordinates_list = [ref_coord]
-
-        for i, coord in enumerate(init_coord_list):
-            if i == 0:
-                continue
-
-            if rotation_degree == 90:
-                new_coord = self.rotate_ninety(coord, ref_coord)
-            elif rotation_degree == 180:
-                new_coord = self.rotate_one_hundred_eighty(coord, ref_coord)
-            elif rotation_degree == 270:
-                new_coord = self.rotate_two_hundred_seventy(coord, ref_coord)
-            rotated_coordinates_list.append(new_coord)
-
-        return rotated_coordinates_list
-
-    def rotate_ninety(self, coord, ref_coord):
-        x = coord[0]
-        y = coord[1]
-        # reference coordinates are the coordinates of
-        # the square whose coordinates will remain stable
-        ref_x = ref_coord[0]
-        ref_y = ref_coord[1]
-
-        if x - ref_x >= 0 and y - ref_y >= 0 and y == ref_y:
-            return [ref_x, ref_y + (x - ref_x)]
-        elif x - ref_x >= 0 and y - ref_y >= 0 and y - ref_y == self.sqsz:
-            return [ref_x - (y - ref_y), ref_y + (x - ref_x)]
-
-    def rotate_one_hundred_eighty(self, coordinates, origin):
-        x = coordinates[0]
-        y = coordinates[1]
-        origin_x = origin[0]
-
-        return [origin_x - (x - origin_x), y]
-
-    def rotate_two_hundred_seventy(self, coordinates, origin):
-        new_coord = self.rotate_ninety(coordinates, origin)
-        return self.rotate_one_hundred_eighty(new_coord, origin)
+        for _ in range(rotation_count):
+            self.rotate(self.curr_coord_list)
+        return self.curr_coord_list
 
     @abstractmethod
     def init_coordinates(self):
@@ -119,7 +79,8 @@ class Basic(Shape):
                 new_coord = [ref_x + (ref_y - y), ref_y]
             rotated_coord_list.append(new_coord)
 
-        return rotated_coord_list
+        self.curr_coord_list = rotated_coord_list
+        return self.curr_coord_list
 
 class SquareInMiddle(Shape):
     def __init__(self, starting_coordinates, square_size):
@@ -170,7 +131,8 @@ class SquareInMiddle(Shape):
                     new_coord = [ref_x + (ref_y - y), ref_y + (x - ref_x)]
             rotated_coord_list.append(new_coord)
 
-        return rotated_coord_list
+        self.curr_coord_list = rotated_coord_list
+        return self.curr_coord_list
 
 class SquareOnLeft(Shape):
     def __init__(self, starting_coordinates, square_size):
@@ -223,7 +185,8 @@ class SquareOnLeft(Shape):
                     new_coord = [ref_x + (ref_y - y), ref_y + (x - ref_x)]
             rotated_coord_list.append(new_coord)
 
-        return rotated_coord_list
+        self.curr_coord_list = rotated_coord_list
+        return self.curr_coord_list
 
 class SquareOnRight(Shape):
     def __init__(self, starting_coordinates, square_size):
@@ -274,7 +237,8 @@ class SquareOnRight(Shape):
                     new_coord = [ref_x + (ref_y - y), ref_y + (x - ref_x)]
             rotated_coord_list.append(new_coord)
 
-        return rotated_coord_list
+        self.curr_coord_list = rotated_coord_list
+        return self.curr_coord_list
 
 class Zigzag(Shape):
     def __init__(self, starting_coordinates, square_size):
@@ -325,4 +289,5 @@ class Zigzag(Shape):
                     new_coord = [ref_x + (ref_y - y), ref_y + (x - ref_x)]
             rotated_coord_list.append(new_coord)
 
-        return rotated_coord_list
+        self.curr_coord_list = rotated_coord_list
+        return self.curr_coord_list
