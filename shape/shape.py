@@ -52,17 +52,11 @@ class Shape(ABC):
 
         self.curr_coord_list = rotated_coord_list
 
-    def calc_zone(self, is_basic):
+    def calc_zone(self):
         ref_x = self.curr_coord_list[0][0]
         ref_y = self.curr_coord_list[0][1]
         x = self.curr_coord_list[3][0]
         y = self.curr_coord_list[3][1]
-
-        if is_basic:
-            zone_90 = x > ref_x and y == ref_y
-            zone_180 = x == ref_x and y > ref_y
-            zone_270 = x < ref_x and y == ref_y
-            zone_360 = x == ref_x and y < ref_y
 
         zone_90 = x > ref_x and y >= ref_y
         zone_180 = x <= ref_x and y > ref_y
@@ -104,8 +98,7 @@ class Basic(Shape):
             ]
 
     def rotate(self):
-        zone = self.calc_zone(True)
-        self.calc_rotation(zone)
+        self.calc_rotation(self.calc_zone())
         return self.curr_coord_list
 
 class SquareInMiddle(Shape):
@@ -121,8 +114,7 @@ class SquareInMiddle(Shape):
         ]
 
     def rotate(self):
-        zone = self.calc_zone(False)
-        self.calc_rotation(zone)
+        self.calc_rotation(self.calc_zone())
         return self.curr_coord_list
 
 class SquareOnLeft(Shape):
@@ -138,8 +130,7 @@ class SquareOnLeft(Shape):
         ]
 
     def rotate(self):
-        zone = self.calc_zone(False)
-        self.calc_rotation(zone)
+        self.calc_rotation(self.calc_zone())
         return self.curr_coord_list
 
 class SquareOnRight(Shape):
@@ -155,8 +146,7 @@ class SquareOnRight(Shape):
         ]
 
     def rotate(self):
-        zone = self.calc_zone(False)
-        self.calc_rotation(zone)
+        self.calc_rotation(self.calc_zone())
         return self.curr_coord_list
 
 class Zigzag(Shape):
@@ -172,6 +162,5 @@ class Zigzag(Shape):
         ]
 
     def rotate(self):
-        zone = self.calc_zone(False)
-        self.calc_rotation(zone)
+        self.calc_rotation(self.calc_zone())
         return self.curr_coord_list
