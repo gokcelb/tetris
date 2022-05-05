@@ -7,11 +7,12 @@ BLACK = (0, 0, 0)
 SCREEN_SIZE = (400, 500)
 
 SQUARE_SIZE = 20
-SQUARE_DIMENSIONS = [SQUARE_SIZE , SQUARE_SIZE]
+SQUARE_DIMENSIONS = [SQUARE_SIZE, SQUARE_SIZE]
 STARTING_COORDINATES = [
     random.randrange(SQUARE_SIZE * 3, SCREEN_SIZE[0] - SQUARE_SIZE * 4, 20),
     SQUARE_SIZE * 3
 ]
+
 
 def main():
     pygame.init()
@@ -24,8 +25,6 @@ def main():
     running = True
 
     shape = ShapeGenerator(STARTING_COORDINATES, SQUARE_SIZE).random_shape()
-    coordinates_list = shape.coordinates()
-
 
     while running:
         screen.fill(BLACK)
@@ -36,16 +35,18 @@ def main():
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_r:
-                    coordinates_list = shape.rotate()
+                    shape.rotate()
 
-        for coordinates in coordinates_list:
-            draw(screen, shape.color, coordinates, SQUARE_DIMENSIONS)
+        for coord in shape.curr_coord_list:
+            draw(screen, shape.color, coord, SQUARE_DIMENSIONS)
 
         pygame.display.flip()
+
 
 def draw(screen, color, coord, dimensions):
     pygame.draw.rect(screen, color, (coord, dimensions))
     pygame.draw.rect(screen, BLACK, (coord, dimensions), 1)
+
 
 if __name__ == "__main__":
     main()
