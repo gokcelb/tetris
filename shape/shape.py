@@ -20,12 +20,29 @@ class Shape(ABC):
                 center_x + center_y - y - self.sqsz, center_y - center_x + x
             ]
 
+    def move(self, direction, unit):
+        """
+        Move to given direction for given unit distance.
+
+        :param string direction: The direction towards which the shape will move.
+        It can only be right or left.
+        :param int unit: How many pixels the shape will move.
+        """
+        if direction == 'right':
+            for coord in self.curr_coord_list:
+                coord[0] += unit
+            self.curr_center[0] += unit
+        else:
+            for coord in self.curr_coord_list:
+                coord[0] -= unit
+            self.curr_center[0] -= unit
+
     async def fall(self, screen_height, gravity):
         """
         Fall until screen length at a speed based on gravity.
 
         :param int screen_height: y axis of game screen
-        :param int gravity: in-game gravity
+        :param int gravity: In-game gravity
         """
         mass = self.sqsz * 0.25
         while self.is_on_air(screen_height):

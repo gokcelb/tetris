@@ -7,6 +7,9 @@ BLACK = (0, 0, 0)
 
 SCREEN_DIMENSIONS = (400, 500)
 GRAVITY = 8
+UNIT = 20
+RIGHT = 'right'
+LEFT = 'left'
 
 SQUARE_SIZE = 20
 SQUARE_DIMENSIONS = [SQUARE_SIZE, SQUARE_SIZE]
@@ -40,6 +43,10 @@ def main():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_r:
                     shape.rotate()
+                elif event.key == pygame.K_d:
+                    shape.move(RIGHT, UNIT)
+                elif event.key == pygame.K_a:
+                    shape.move(LEFT, UNIT)
 
         for coord in shape.curr_coord_list:
             draw(screen, shape.color, coord, SQUARE_DIMENSIONS)
