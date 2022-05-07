@@ -1,4 +1,5 @@
 from abc import ABC
+import asyncio
 
 
 class Shape(ABC):
@@ -8,9 +9,7 @@ class Shape(ABC):
         self.curr_center = [0, 0]
 
     def rotate(self):
-        """
-        Rotate the shape 90 degrees clockwise around a center.
-        """
+        """Rotate the shape 90 degrees clockwise around a center."""
         center_x, center_y = self.curr_center
 
         # substracting self.sqsz from the x axis compensates the shift between
@@ -20,6 +19,41 @@ class Shape(ABC):
             self.curr_coord_list[i] = [
                 center_x + center_y - y - self.sqsz, center_y - center_x + x
             ]
+
+    async def fall(self, screen_height, gravity):
+        """
+        Fall until screen length at a speed based on gravity.
+
+        :param int screen_height: y axis of game screen
+        :param int gravity: in-game gravity
+        """
+        mass = self.sqsz * 0.25
+        while self.is_on_air(screen_height):
+            await asyncio.sleep(0.5)
+
+            fallable_height = self.fallable_height(screen_height)
+            if fallable_height < mass * gravity:
+                self.fall_for(fallable_height)
+            else:
+                self.fall_for(mass * gravity)
+
+    def is_on_air(self, screen_height):
+        for coord in self.curr_coord_list:
+            if coord[1] == screen_height - self.sqsz:
+                return False
+        return True
+
+    def fallable_height(self, screen_height):
+        closest_to_ground = 0
+        for coord in self.curr_coord_list:
+            if coord[1] > closest_to_ground:
+                closest_to_ground = coord[1]
+        return screen_height - self.sqsz - closest_to_ground
+
+    def fall_for(self, height):
+        for coord in self.curr_coord_list:
+            coord[1] += height
+        self.curr_center[1] += height
 
 
 class Basic(Shape):
