@@ -5,24 +5,29 @@ class Shape(ABC):
     def __init__(self, square_size):
         self.sqsz = square_size
         self.curr_coord_list = [[0, 0] for _ in range(4)]
+        self.curr_center = [0, 0]
 
     def rotate(self):
         """
-        Rotate the shape 90 degrees clockwise by updating shape coordinates.
+        Rotate the shape 90 degrees clockwise around a center.
         """
-        # const_x and const_y are the coordinates of the square
-        # that will always remain constant and unchanging
-        const_x, const_y = self.curr_coord_list[0]
+        center_x, center_y = self.curr_center
 
-        for i in range(1, len(self.curr_coord_list)):
+        # substracting self.sqsz from the x axis compensates the shift between
+        # the coordinates of one corner and the other in 90 degree rotation
+        for i in range(len(self.curr_coord_list)):
             x, y = self.curr_coord_list[i]
-            self.curr_coord_list[i] = [const_x - y + const_y, const_y + x - const_x]
+            self.curr_coord_list[i] = [
+                center_x + center_y - y - self.sqsz, center_y - center_x + x
+            ]
+
 
 class Basic(Shape):
     def __init__(self, square_size):
         super().__init__(square_size)
         self.init_coord_list = [[0, 0], [self.sqsz, 0],
                                 [self.sqsz * 2, 0], [self.sqsz * 3, 0]]
+        self.center = [self.sqsz * 2, self.sqsz * 0.5]
 
 
 class SquareInMiddle(Shape):
@@ -30,6 +35,7 @@ class SquareInMiddle(Shape):
         super().__init__(square_size)
         self.init_coord_list = [[0, 0], [self.sqsz, 0],
                                 [self.sqsz * 2, 0], [self.sqsz, self.sqsz]]
+        self.center = [self.sqsz * 1.5, self.sqsz]
 
 
 class SquareOnLeft(Shape):
@@ -37,6 +43,7 @@ class SquareOnLeft(Shape):
         super().__init__(square_size)
         self.init_coord_list = [[0, 0], [self.sqsz, 0],
                                 [self.sqsz * 2, 0], [0, self.sqsz]]
+        self.center = [self.sqsz * 1.5, self.sqsz]
 
 
 class SquareOnRight(Shape):
@@ -44,6 +51,7 @@ class SquareOnRight(Shape):
         super().__init__(square_size)
         self.init_coord_list = [[0, 0], [self.sqsz, 0], [
             self.sqsz * 2, 0], [self.sqsz * 2, self.sqsz]]
+        self.center = [self.sqsz * 1.5, self.sqsz]
 
 
 class Zigzag(Shape):
@@ -51,6 +59,7 @@ class Zigzag(Shape):
         super().__init__(square_size)
         self.init_coord_list = [[0, 0], [self.sqsz, 0], [
             self.sqsz, self.sqsz], [self.sqsz * 2, self.sqsz]]
+        self.center = [self.sqsz * 1.5, self.sqsz]
 
 
 class Square(Shape):
@@ -58,3 +67,4 @@ class Square(Shape):
         super().__init__(square_size)
         self.init_coord_list = [[0, 0], [self.sqsz, 0],
                                 [0, self.sqsz], [self.sqsz, self.sqsz]]
+        self.center = [self.sqsz, self.sqsz]

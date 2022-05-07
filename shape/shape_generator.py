@@ -1,5 +1,5 @@
 import random
-from shape.shape import Shape, Basic, SquareInMiddle, SquareOnLeft, SquareOnRight, Zigzag
+from shape.shape import Shape, Basic, SquareInMiddle, SquareOnLeft, SquareOnRight, Zigzag, Square
 
 
 class ShapeGenerator:
@@ -20,7 +20,8 @@ class ShapeGenerator:
             SquareInMiddle,
             SquareOnLeft,
             SquareOnRight,
-            Zigzag
+            Zigzag,
+            Square
         ]
         self.shape = None
 
@@ -39,6 +40,10 @@ class ShapeGenerator:
         for i in range(len(self.shape.init_coord_list)):
             self.shape.curr_coord_list[i] = self.add_coordinates(
                 self.starting_coord, self.shape.init_coord_list[i])
+
+        for i in range(len(self.shape.center)):
+            self.shape.curr_center[i] = self.starting_coord[i] + \
+                self.shape.center[i]
 
     @staticmethod
     def add_coordinates(first, second):
