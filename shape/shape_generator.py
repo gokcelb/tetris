@@ -15,13 +15,8 @@ class ShapeGenerator:
     def __init__(self, starting_coord, square_size):
         self.starting_coord = starting_coord
         self.square_size = square_size
-        self.shapes = [
-            Basic,
-            SquareInMiddle,
-            SquareOnLeft,
-            SquareOnRight,
-            Zigzag,
-            Square
+        self.shapes: list[Shape] = [
+            Basic, SquareInMiddle, SquareOnLeft, SquareOnRight, Zigzag, Square
         ]
         self.shape = None
 
@@ -30,7 +25,7 @@ class ShapeGenerator:
         self.shape = shape(self.square_size)
         self.set_random_color()
         self.set_random_coordinates()
-        return self.shape
+        return self.shape.clone()
 
     def set_random_color(self):
         self.shape.color = ShapeGenerator.COLORS[random.randint(

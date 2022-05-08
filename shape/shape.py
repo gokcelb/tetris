@@ -1,12 +1,15 @@
+from __future__ import annotations
 from abc import ABC
-import asyncio
+import time
 
 
 class Shape(ABC):
     def __init__(self, square_size):
         self.sqsz = square_size
+        self.color = None
         self.curr_coord_list = [[0, 0] for _ in range(4)]
         self.curr_center = [0, 0]
+        self.on_ground = False
 
     def rotate(self):
         """Rotate the shape 90 degrees clockwise around a center."""
@@ -19,6 +22,14 @@ class Shape(ABC):
             self.curr_coord_list[i] = [
                 center_x + center_y - y - self.sqsz, center_y - center_x + x
             ]
+
+    def clone(self) -> Shape:
+        shape = Shape(self.sqsz)
+        shape.curr_coord_list = self.curr_coord_list.copy()
+        shape.curr_center = self.curr_center.copy()
+        shape.on_ground = self.on_ground
+        shape.color = self.color
+        return shape
 
     def move(self, direction, unit):
         """
@@ -37,7 +48,7 @@ class Shape(ABC):
                 coord[0] -= unit
             self.curr_center[0] -= unit
 
-    async def fall(self, screen_height, gravity):
+    def fall(self, screen_height, gravity):
         """
         Fall until screen length at a speed based on gravity.
 
@@ -46,7 +57,7 @@ class Shape(ABC):
         """
         mass = self.sqsz * 0.25
         while self.is_on_air(screen_height):
-            await asyncio.sleep(0.5)
+            time.sleep(0.5)
 
             fallable_height = self.fallable_height(screen_height)
             if fallable_height < mass * gravity:
@@ -54,13 +65,15 @@ class Shape(ABC):
             else:
                 self.fall_for(mass * gravity)
 
-    def is_on_air(self, screen_height):
+        self.on_ground = True
+
+    def is_on_air(self, screen_height) -> bool:
         for coord in self.curr_coord_list:
             if coord[1] == screen_height - self.sqsz:
                 return False
         return True
 
-    def fallable_height(self, screen_height):
+    def fallable_height(self, screen_height) -> int:
         closest_to_ground = 0
         for coord in self.curr_coord_list:
             if coord[1] > closest_to_ground:
