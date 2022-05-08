@@ -1,40 +1,43 @@
 import pygame
 import random
-import asyncio
+from gravity import Gravity
+from ground import Ground
 from shape.shape_generator import ShapeGenerator
 
 BLACK = (0, 0, 0)
 
-SCREEN_DIMENSIONS = (400, 500)
-GRAVITY = 8
+SCREEN_DIM = (400, 500)
 UNIT = 20
 RIGHT = 'right'
 LEFT = 'left'
 
 SQUARE_SIZE = 20
 SQUARE_DIMENSIONS = [SQUARE_SIZE, SQUARE_SIZE]
-STARTING_COORDINATES = [
-    random.randrange(
-        SQUARE_SIZE * 3, SCREEN_DIMENSIONS[0] - SQUARE_SIZE * 4, 20
-    ), SQUARE_SIZE * 3
-]
+STARTING_COORD = [random.randrange(
+    SQUARE_SIZE * 3, SCREEN_DIM[0] - SQUARE_SIZE * 4, 20), SQUARE_SIZE * 3]
 
 
 def main():
     pygame.init()
     pygame.display.set_icon(pygame.image.load('tetris.png'))
     pygame.display.set_caption('TETRIS')
-    screen = pygame.display.set_mode(SCREEN_DIMENSIONS)
+    screen = pygame.display.set_mode(SCREEN_DIM)
+    clock = pygame.time.Clock()
 
     running = True
 
-    shape = ShapeGenerator(STARTING_COORDINATES, SQUARE_SIZE).random_shape()
+    ground = Ground()
+    shape = ShapeGenerator(STARTING_COORD, SQUARE_SIZE).random_shape()
 
-    loop = asyncio.get_event_loop()
-    loop.create_task(shape.fall(SCREEN_DIMENSIONS[1], GRAVITY))
+    gravity = Gravity(SCREEN_DIM[1])
+    gravity.set_shape(shape).start()
 
     while running:
+        print('LOOPED')
+        clock.tick(10)
+
         screen.fill(BLACK)
+        update_ground(ground, screen)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -48,25 +51,34 @@ def main():
                 elif event.key == pygame.K_a:
                     shape.move(LEFT, UNIT)
 
-        for coord in shape.curr_coord_list:
-            draw(screen, shape.color, coord, SQUARE_DIMENSIONS)
-            pygame.draw.circle(screen, (155, 0, 255), shape.curr_center, 5)
+        update_shape(screen, shape)
 
-        run_once(loop)
+        if shape.on_ground:
+            ground.add_shape(shape.clone())
+
+            del gravity
+            del shape
+
+            shape = ShapeGenerator(STARTING_COORD, SQUARE_SIZE).random_shape()
+            gravity = Gravity(SCREEN_DIM[1])
+            gravity.set_shape(shape).start()
 
         pygame.display.flip()
 
-    loop.close()
+
+def update_ground(ground, screen):
+    for shape in ground.shapes:
+        update_shape(screen, shape)
+
+
+def update_shape(screen, shape):
+    for coord in shape.curr_coord_list:
+        draw(screen, shape.color, coord, SQUARE_DIMENSIONS)
 
 
 def draw(screen, color, coord, dimensions):
     pygame.draw.rect(screen, color, (coord, dimensions))
     pygame.draw.rect(screen, BLACK, (coord, dimensions), 1)
-
-
-def run_once(loop):
-    loop.call_soon(loop.stop)
-    loop.run_forever()
 
 
 if __name__ == "__main__":
