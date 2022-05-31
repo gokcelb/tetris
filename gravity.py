@@ -22,6 +22,9 @@ class Gravity(threading.Thread):
         while self.collider.collision(self.shape) != VERTICAL_COLLISION:
             time.sleep(0.5)
 
+            if self.collider.collision(self.shape) == VERTICAL_COLLISION:
+                break
+
             for coord in self.shape.curr_coord_list:
                 coord[1] += pull_distance
 
