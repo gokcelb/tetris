@@ -1,6 +1,5 @@
 from __future__ import annotations
 from abc import ABC
-import time
 
 
 class Shape(ABC):
@@ -10,6 +9,7 @@ class Shape(ABC):
         self.curr_coord_list = [[0, 0] for _ in range(4)]
         self.curr_center = [0, 0]
         self.on_ground = False
+        self.mass = self.sqsz / 4
 
     def rotate(self):
         """Rotate the shape 90 degrees clockwise around a center."""
@@ -20,7 +20,7 @@ class Shape(ABC):
         for i in range(len(self.curr_coord_list)):
             x, y = self.curr_coord_list[i]
             self.curr_coord_list[i] = [
-                center_x + center_y - y - self.sqsz, center_y - center_x + x
+                center_x + center_y - y, center_y - center_x + x
             ]
 
     def clone(self) -> Shape:
@@ -48,50 +48,13 @@ class Shape(ABC):
                 coord[0] -= unit
             self.curr_center[0] -= unit
 
-    def fall(self, screen_height, gravity):
-        """
-        Fall until screen length at a speed based on gravity.
-
-        :param int screen_height: y axis of game screen
-        :param int gravity: In-game gravity
-        """
-        mass = self.sqsz * 0.25
-        while self.is_on_air(screen_height):
-            time.sleep(0.5)
-
-            fallable_height = self.fallable_height(screen_height)
-            if fallable_height < mass * gravity:
-                self.fall_for(fallable_height)
-            else:
-                self.fall_for(mass * gravity)
-
-        self.on_ground = True
-
-    def is_on_air(self, screen_height) -> bool:
-        for coord in self.curr_coord_list:
-            if coord[1] == screen_height - self.sqsz:
-                return False
-        return True
-
-    def fallable_height(self, screen_height) -> int:
-        closest_to_ground = 0
-        for coord in self.curr_coord_list:
-            if coord[1] > closest_to_ground:
-                closest_to_ground = coord[1]
-        return screen_height - self.sqsz - closest_to_ground
-
-    def fall_for(self, height):
-        for coord in self.curr_coord_list:
-            coord[1] += height
-        self.curr_center[1] += height
-
 
 class Basic(Shape):
     def __init__(self, square_size):
         super().__init__(square_size)
         self.init_coord_list = [[0, 0], [self.sqsz, 0],
                                 [self.sqsz * 2, 0], [self.sqsz * 3, 0]]
-        self.center = [self.sqsz * 2, self.sqsz * 0.5]
+        self.center = [self.sqsz * 2, 0]
 
 
 class SquareInMiddle(Shape):
@@ -99,7 +62,7 @@ class SquareInMiddle(Shape):
         super().__init__(square_size)
         self.init_coord_list = [[0, 0], [self.sqsz, 0],
                                 [self.sqsz * 2, 0], [self.sqsz, self.sqsz]]
-        self.center = [self.sqsz * 1.5, self.sqsz]
+        self.center = [self.sqsz, self.sqsz]
 
 
 class SquareOnLeft(Shape):
@@ -107,7 +70,7 @@ class SquareOnLeft(Shape):
         super().__init__(square_size)
         self.init_coord_list = [[0, 0], [self.sqsz, 0],
                                 [self.sqsz * 2, 0], [0, self.sqsz]]
-        self.center = [self.sqsz * 1.5, self.sqsz]
+        self.center = [self.sqsz, self.sqsz]
 
 
 class SquareOnRight(Shape):
@@ -115,7 +78,7 @@ class SquareOnRight(Shape):
         super().__init__(square_size)
         self.init_coord_list = [[0, 0], [self.sqsz, 0], [
             self.sqsz * 2, 0], [self.sqsz * 2, self.sqsz]]
-        self.center = [self.sqsz * 1.5, self.sqsz]
+        self.center = [self.sqsz, self.sqsz]
 
 
 class Zigzag(Shape):
@@ -123,7 +86,7 @@ class Zigzag(Shape):
         super().__init__(square_size)
         self.init_coord_list = [[0, 0], [self.sqsz, 0], [
             self.sqsz, self.sqsz], [self.sqsz * 2, self.sqsz]]
-        self.center = [self.sqsz * 1.5, self.sqsz]
+        self.center = [self.sqsz, self.sqsz]
 
 
 class Square(Shape):

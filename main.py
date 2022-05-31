@@ -1,5 +1,6 @@
 import pygame
 import random
+from collider import NO_COLLISION, VERTICAL_COLLISION, CollisionDetector
 from gravity import Gravity
 from ground import Ground
 from shape.shape_generator import ShapeGenerator
@@ -29,15 +30,19 @@ def main():
     ground = Ground()
     shape = ShapeGenerator(STARTING_COORD, SQUARE_SIZE).random_shape()
 
-    gravity = Gravity(SCREEN_DIM[1])
+    collider = CollisionDetector(SCREEN_DIM)
+    collider.add_object(shape)
+
+    gravity = Gravity(collider)
     gravity.set_shape(shape).start()
 
     while running:
-        print('LOOPED')
         clock.tick(10)
 
         screen.fill(BLACK)
         update_ground(ground, screen)
+
+        update_shape(screen, shape)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -47,20 +52,22 @@ def main():
                 if event.key == pygame.K_r:
                     shape.rotate()
                 elif event.key == pygame.K_d:
-                    shape.move(RIGHT, UNIT)
+                    if collider.collision(shape, direction=-1) == NO_COLLISION:
+                        shape.move(RIGHT, UNIT)
                 elif event.key == pygame.K_a:
-                    shape.move(LEFT, UNIT)
+                    if collider.collision(shape, direction=1) == NO_COLLISION:
+                        shape.move(LEFT, UNIT)
 
-        update_shape(screen, shape)
-
-        if shape.on_ground:
+        if collider.collision(shape) == VERTICAL_COLLISION:
             ground.add_shape(shape.clone())
 
             del gravity
             del shape
 
             shape = ShapeGenerator(STARTING_COORD, SQUARE_SIZE).random_shape()
-            gravity = Gravity(SCREEN_DIM[1])
+            collider.add_object(shape)
+
+            gravity = Gravity(collider)
             gravity.set_shape(shape).start()
 
         pygame.display.flip()
