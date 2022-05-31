@@ -15,21 +15,11 @@ class Shape(ABC):
         """Rotate the shape 90 degrees clockwise around a center."""
         center_x, center_y = self.curr_center
 
-        # substracting self.sqsz from the x axis compensates the shift between
-        # the coordinates of one corner and the other in 90 degree rotation
         for i in range(len(self.curr_coord_list)):
             x, y = self.curr_coord_list[i]
             self.curr_coord_list[i] = [
                 center_x + center_y - y, center_y - center_x + x
             ]
-
-    def clone(self) -> Shape:
-        shape = Shape(self.sqsz)
-        shape.curr_coord_list = self.curr_coord_list.copy()
-        shape.curr_center = self.curr_center.copy()
-        shape.on_ground = self.on_ground
-        shape.color = self.color
-        return shape
 
     def move(self, direction, unit):
         """
@@ -47,6 +37,14 @@ class Shape(ABC):
             for coord in self.curr_coord_list:
                 coord[0] -= unit
             self.curr_center[0] -= unit
+
+    def clone(self) -> Shape:
+        shape = Shape(self.sqsz)
+        shape.curr_coord_list = self.curr_coord_list.copy()
+        shape.curr_center = self.curr_center.copy()
+        shape.on_ground = self.on_ground
+        shape.color = self.color
+        return shape
 
 
 class Basic(Shape):
