@@ -33,10 +33,14 @@ class Shape(ABC):
             for coord in self.curr_coord_list:
                 coord[0] += unit
             self.curr_center[0] += unit
-        else:
+        elif direction == 'left':
             for coord in self.curr_coord_list:
                 coord[0] -= unit
             self.curr_center[0] -= unit
+        elif direction == 'down':
+            for coord in self.curr_coord_list:
+                coord[1] += unit
+            self.curr_center[1] += unit
 
     def clone(self) -> Shape:
         shape = Shape(self.sqsz)

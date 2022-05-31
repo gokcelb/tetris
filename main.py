@@ -11,6 +11,7 @@ SCREEN_DIM = (400, 500)
 UNIT = 20
 RIGHT = 'right'
 LEFT = 'left'
+DOWN = 'down'
 
 SQUARE_SIZE = 20
 SQUARE_DIMENSIONS = [SQUARE_SIZE, SQUARE_SIZE]
@@ -49,14 +50,17 @@ def main():
                 running = False
 
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_r:
+                if event.key == pygame.K_UP:
                     shape.rotate()
-                elif event.key == pygame.K_d:
+                elif event.key == pygame.K_RIGHT:
                     if collider.collision(shape, direction=-1) == NO_COLLISION:
                         shape.move(RIGHT, UNIT)
-                elif event.key == pygame.K_a:
+                elif event.key == pygame.K_LEFT:
                     if collider.collision(shape, direction=1) == NO_COLLISION:
                         shape.move(LEFT, UNIT)
+                elif event.key == pygame.K_DOWN:
+                    if collider.collision(shape, direction=1) == NO_COLLISION:
+                        shape.move(DOWN, UNIT)
 
         if collider.collision(shape) == VERTICAL_COLLISION:
             ground.add_shape(shape.clone())
