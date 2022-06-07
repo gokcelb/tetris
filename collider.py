@@ -1,3 +1,4 @@
+from __future__ import annotations
 from shape.shape import Shape
 
 HORIZONTAL_COLLISION = 'horizontal'
@@ -8,32 +9,26 @@ NO_COLLISION = 'none'
 class CollisionDetector:
     def __init__(self, screen_dim):
         self.screen_dim = screen_dim
-        self.objects: list[Shape] = []
+        self.squares_on_ground: list[list[int]] = []
 
-    def collision(self, object: Shape, direction: int = None) -> str:
-        squares_on_air = object.curr_coord_list
+    def collision(self, shape: Shape, direction: int = None) -> str:
+        squares_on_air = shape.curr_coord_list
 
-        for o in self.objects:
-            if object is o:
-                continue
+        for soa_x, soa_y in squares_on_air:
+            for sog_x, sog_y in self.squares_on_ground:
+                if sog_y - soa_y == 20 and soa_x == sog_x:
+                    return VERTICAL_COLLISION
 
-            squares_on_ground = o.curr_coord_list
+                if direction and soa_x - sog_x == 20 * direction and soa_y == sog_y:
+                    return HORIZONTAL_COLLISION
 
-            for soa_x, soa_y in squares_on_air:
-                for sog_x, sog_y in squares_on_ground:
-                    if sog_y - soa_y == 20 and soa_x == sog_x:
-                        return VERTICAL_COLLISION
+        return self.is_on_ground(shape)
 
-                    if direction and soa_x - sog_x == 20 * direction and soa_y == sog_y:
-                        return HORIZONTAL_COLLISION
-
-        return self.is_on_ground(object)
-
-    def is_on_ground(self, object: Shape) -> bool:
-        for coord in object.curr_coord_list:
-            if self.screen_dim[1] - coord[1] <= object.sqsz:
+    def is_on_ground(self, shape: Shape) -> bool:
+        for coord in shape.curr_coord_list:
+            if self.screen_dim[1] - coord[1] <= shape.sqsz:
                 return VERTICAL_COLLISION
         return NO_COLLISION
 
-    def add_object(self, object) -> None:
-        self.objects.append(object)
+    def add_square_coord(self, coord: list[int]) -> None:
+        self.squares_on_ground.append(coord)

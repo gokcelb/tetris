@@ -32,7 +32,6 @@ def main():
     shape = ShapeGenerator(STARTING_COORD, SQUARE_SIZE).random_shape()
 
     collider = CollisionDetector(SCREEN_DIM)
-    collider.add_object(shape)
 
     gravity = Gravity(collider)
     gravity.set_shape(shape).start()
@@ -64,12 +63,12 @@ def main():
 
         if collider.collision(shape) == VERTICAL_COLLISION:
             add_shape_to_ground(ground, shape)
+            add_squares_on_ground_to_collider(collider, ground)
 
             del gravity
             del shape
 
             shape = ShapeGenerator(STARTING_COORD, SQUARE_SIZE).random_shape()
-            collider.add_object(shape)
 
             gravity = Gravity(collider)
             gravity.set_shape(shape).start()
@@ -86,7 +85,12 @@ def is_at_border(shape, direction: str) -> bool:
     return False
 
 
-def add_shape_to_ground(ground, shape):
+def add_squares_on_ground_to_collider(collider: CollisionDetector, ground: Ground) -> None:
+    for square in ground.get_squares():
+        collider.add_square_coord(square['coord'])
+
+
+def add_shape_to_ground(ground: Ground, shape) -> None:
     for coord in shape.curr_coord_list:
         ground.add_square(coord, shape.color)
 
@@ -96,7 +100,7 @@ def update_ground(ground: Ground, screen) -> None:
         update_square(screen, square['coord'], square['color'])
 
 
-def update_shape(screen, shape):
+def update_shape(screen, shape) -> None:
     for coord in shape.curr_coord_list:
         update_square(screen, coord, shape.color)
 

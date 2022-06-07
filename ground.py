@@ -15,13 +15,12 @@ class Ground:
         for row in self.blocks:
             for col in self.blocks[row]:
                 if col['status'] == FULL:
-                    squares.append({'coord': [col['value'], row], 'color': col['color']})
-        print(squares)
+                    squares.append(
+                        {'coord': [col['value'], row], 'color': col['color']})
         return squares
 
     def add_square(self, coord: list[int], color: tuple[int]) -> None:
         row = self.blocks[coord[1]]
-        print('power of row', row)
         for col in row:
             if col['value'] == coord[0]:
                 col['status'] = FULL
@@ -32,5 +31,6 @@ class Ground:
         for row in range(0, self.screen_dim[1], self.sqsz):
             blocks[row] = []
             for col in range(0, self.screen_dim[0], self.sqsz):
-                blocks[row].append({'value': col, 'status': EMPTY, 'color': None})
+                blocks[row].append(
+                    {'value': col, 'status': EMPTY, 'color': None})
         return blocks
