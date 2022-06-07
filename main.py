@@ -51,15 +51,15 @@ def main():
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_UP:
-                    shape.rotate()
+                    shape.rotate(SCREEN_DIM[0])
                 elif event.key == pygame.K_RIGHT:
-                    if collider.collision(shape, direction=-1) == NO_COLLISION:
+                    if collider.collision(shape, direction=-1) == NO_COLLISION and not is_at_border(shape, RIGHT):
                         shape.move(RIGHT, UNIT)
                 elif event.key == pygame.K_LEFT:
-                    if collider.collision(shape, direction=1) == NO_COLLISION:
+                    if collider.collision(shape, direction=1) == NO_COLLISION and not is_at_border(shape, LEFT):
                         shape.move(LEFT, UNIT)
                 elif event.key == pygame.K_DOWN:
-                    if collider.collision(shape, direction=1) == NO_COLLISION:
+                    if collider.collision(shape) == NO_COLLISION:
                         shape.move(DOWN, UNIT)
 
         if collider.collision(shape) == VERTICAL_COLLISION:
@@ -77,17 +77,26 @@ def main():
         pygame.display.flip()
 
 
-def update_ground(ground, screen):
+def is_at_border(shape, direction: str) -> bool:
+    for coord in shape.curr_coord_list:
+        if direction == RIGHT and coord[0] + shape.sqsz == SCREEN_DIM[0]:
+            return True
+        if direction == LEFT and coord[0] == 0:
+            return True
+    return False
+
+
+def update_ground(ground, screen) -> None:
     for shape in ground.shapes:
         update_shape(screen, shape)
 
 
-def update_shape(screen, shape):
+def update_shape(screen, shape) -> None:
     for coord in shape.curr_coord_list:
         draw(screen, shape.color, coord, SQUARE_DIMENSIONS)
 
 
-def draw(screen, color, coord, dimensions):
+def draw(screen, color, coord, dimensions) -> None:
     pygame.draw.rect(screen, color, (coord, dimensions))
     pygame.draw.rect(screen, BLACK, (coord, dimensions), 1)
 

@@ -8,20 +8,22 @@ class Shape(ABC):
         self.color = None
         self.curr_coord_list = [[0, 0] for _ in range(4)]
         self.curr_center = [0, 0]
-        self.on_ground = False
         self.mass = self.sqsz / 4
 
-    def rotate(self):
+    def rotate(self, screen_length: int) -> None:
         """Rotate the shape 90 degrees clockwise around a center."""
         center_x, center_y = self.curr_center
 
         for i in range(len(self.curr_coord_list)):
             x, y = self.curr_coord_list[i]
-            self.curr_coord_list[i] = [
-                center_x + center_y - y, center_y - center_x + x
-            ]
+            new_x = center_x + center_y - y
+            new_y = center_y - center_x + x
 
-    def move(self, direction, unit):
+            if new_x < 0 or new_x + self.sqsz > screen_length:
+                return
+            self.curr_coord_list[i] = [new_x, new_y]
+
+    def move(self, direction, unit) -> None:
         """
         Move to given direction for given unit distance.
 
@@ -46,7 +48,6 @@ class Shape(ABC):
         shape = Shape(self.sqsz)
         shape.curr_coord_list = self.curr_coord_list.copy()
         shape.curr_center = self.curr_center.copy()
-        shape.on_ground = self.on_ground
         shape.color = self.color
         return shape
 
@@ -97,3 +98,6 @@ class Square(Shape):
         self.init_coord_list = [[0, 0], [self.sqsz, 0],
                                 [0, self.sqsz], [self.sqsz, self.sqsz]]
         self.center = [self.sqsz, self.sqsz]
+
+    def rotate(self, screen_length: int) -> None:
+        return
