@@ -63,7 +63,8 @@ def main():
 
         if collider.collision(shape) == VERTICAL_COLLISION:
             add_shape_to_ground(ground, shape)
-            add_squares_on_ground_to_collider(collider, ground)
+            ground.destroy_complete_rows()
+            set_squares_on_ground_for_collider(collider, ground)
 
             del gravity
             del shape
@@ -85,9 +86,11 @@ def is_at_border(shape, direction: str) -> bool:
     return False
 
 
-def add_squares_on_ground_to_collider(collider: CollisionDetector, ground: Ground) -> None:
+def set_squares_on_ground_for_collider(collider: CollisionDetector, ground: Ground) -> None:
+    square_coords: list[list[int]] = []
     for square in ground.get_squares():
-        collider.add_square_coord(square['coord'])
+        square_coords.append(square['coord'])
+    collider.set_square_coords(square_coords)
 
 
 def add_shape_to_ground(ground: Ground, shape) -> None:

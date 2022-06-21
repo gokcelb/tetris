@@ -34,3 +34,18 @@ class Ground:
                 blocks[row].append(
                     {'value': col, 'status': EMPTY, 'color': None})
         return blocks
+
+    def destroy_complete_rows(self) -> None:
+        for row in self.blocks:
+            if self.row_is_complete(self.blocks[row]):
+                self.destroy_row(self.blocks[row])
+
+    def row_is_complete(self, row) -> bool:
+        for col in row:
+            if col['status'] != FULL:
+                return False
+        return True
+
+    def destroy_row(self, row) -> None:
+        for col in row:
+            col['status'] = EMPTY

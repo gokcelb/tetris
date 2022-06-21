@@ -30,5 +30,5 @@ class CollisionDetector:
                 return VERTICAL_COLLISION
         return NO_COLLISION
 
-    def add_square_coord(self, coord: list[int]) -> None:
-        self.squares_on_ground.append(coord)
+    def set_square_coords(self, square_coords: list[list[int]]) -> None:
+        self.squares_on_ground = square_coords
