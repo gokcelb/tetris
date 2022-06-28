@@ -64,6 +64,7 @@ def main():
         if collider.collision(shape) == VERTICAL_COLLISION:
             add_shape_to_ground(ground, shape)
             ground.destroy_complete_rows()
+            ground.rearrange_squares()
             set_squares_on_ground_for_collider(collider, ground)
 
             del gravity
