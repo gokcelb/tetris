@@ -1,14 +1,7 @@
 from __future__ import annotations
 
-# Block status
-EMPTY = 0
-FULL = 1
-
-# Square status
-INTACT = 'intact'
-FRAGMENTED = 'fragmented'
-NA = 'na'
-
+EMPTY = 'empty'
+FULL = 'full'
 
 class Ground:
     def __init__(self, sqsz: int, screen_dim: list[int]) -> None:
@@ -31,7 +24,6 @@ class Ground:
             if col['value'] == coord[0]:
                 col['status'] = FULL
                 col['color'] = color
-                col['square_status'] = INTACT
 
     def init_block_coords(self) -> None:
         blocks = {}
@@ -39,53 +31,56 @@ class Ground:
             blocks[row] = []
             for col in range(0, self.screen_dim[0], self.sqsz):
                 blocks[row].append(
-                    {'value': col, 'status': EMPTY, 'color': None, 'square_status': NA})
+                    {
+                        'value': col,
+                        'status': EMPTY,
+                        'color': None,
+                    }
+                )
         return blocks
 
     def destroy_complete_rows(self) -> None:
+        num_of_rows_destroyed = 0
         for row in self.blocks:
             if self.__row_is_complete(self.blocks[row]):
                 self.__destroy_row(self.blocks[row])
+                num_of_rows_destroyed += 1
 
-    def rearrange_squares(self) -> None:
-        for row in self.blocks:
-            next_row = row + self.sqsz
-            if next_row == self.screen_dim[1]:
-                continue
+        if num_of_rows_destroyed > 0:
+            self.rearrange_squares(num_of_rows_destroyed)
 
-            for col in self.blocks[row]:
-                next_cols = self.__find_next_empty_cols(col, next_row)
-                if next_cols is None:
+    def rearrange_squares(self, num_of_rows_destroyed: int) -> None:
+        curr_row = self.screen_dim[1] - self.sqsz
+        while curr_row > 0:
+            for col in self.blocks[curr_row]:
+                if curr_row + (self.sqsz + num_of_rows_destroyed) >= self.screen_dim[1]:
                     continue
 
-                for next_col in next_cols:
-                    self.__move_col_down(col, next_col)
+                if col['status'] == FULL:
+                    self.__move_col_down(num_of_rows_destroyed, col, curr_row)
 
-    def __find_next_empty_cols(self, col, next_row) -> list[dict]:
-        next_cols = []
-        while next_row + self.sqsz <= self.screen_dim[1]:
-            for next_col in self.blocks[next_row]:
-                if next_col['status'] == EMPTY and next_col['value'] == col['value']:
-                    next_cols.append(next_col)
-            next_row += self.sqsz
-        return next_cols
+            curr_row -= self.sqsz
 
-    def __move_col_down(self, col, next_col) -> None:
-        temp = col.copy()
+    def __move_col_down(self, by, col, row):
+        target_row = row + (self.sqsz * by)
+        target_col = self.__find_target_col(col, target_row)
+
+        target_col['status'] = col['status']
+        target_col['color'] = col['color']
         col['status'] = EMPTY
         col['color'] = None
-        col['square_status'] = INTACT
-        next_col['status'] = temp['status']
-        next_col['color'] = temp['color']
-        next_col['square_status'] = temp['square_status']
+
+    def __find_target_col(self, curr_col, target_row) -> dict:
+        for col in self.blocks[target_row]:
+            if col['value'] == curr_col['value']:
+                return col
 
     def __row_is_complete(self, row) -> bool:
         for col in row:
-            if col['status'] != FULL:
+            if col['status'] == EMPTY:
                 return False
         return True
 
     def __destroy_row(self, row) -> None:
         for col in row:
             col['status'] = EMPTY
-            col['square_status'] = FRAGMENTED
